@@ -1,0 +1,7 @@
+(source "melpa" "http://melpa.milkbox.net/packages/")
+
+(package "stackmacs" "0.0.1" "A stackoverflow client for emacs")
+
+(development
+  (depends-on "ecukes")
+  (depends-on "espuds"))

@@ -1,0 +1,19 @@
+* stackmacs
+
+  A emacs major mode for stack overflow
+
+* Keybindings
+
+  All keybindings in stackmacs start with `C-c C-s` and then a two
+  letter mnemonic shortcut
+
+  - browse questions (`bq`) :: Browse thru list of most recent stack
+       overflow questions
+
+       
+* Development Environment Setup
+
+  Use carton to download dependencies. 
+  Run tests using ecukes. 
+
+
