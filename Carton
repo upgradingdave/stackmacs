@@ -1,6 +1,9 @@
 (source "melpa" "http://melpa.milkbox.net/packages/")
+(source "local-elpa" "~/src/elisp/elpa/")
 
 (package "stackmacs" "0.0.1" "A stackoverflow client for emacs")
+
+(depends-on "cookbook" "0.0.1")
 
 (development
   (depends-on "ecukes")

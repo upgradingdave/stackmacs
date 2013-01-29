@@ -25,7 +25,7 @@
  )
 
 (Before
- (switch-to-buffer (get-buffer-create "*stackmacs-mode*"))
+ (switch-to-buffer (get-buffer-create stackmacs/buffer))
  (erase-buffer)
  (transient-mark-mode 1)
  (cua-mode 0)
