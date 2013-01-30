@@ -33,24 +33,37 @@
 (defvar smacs/buffer "*stackmacs*" 
   "Buffer used to view results of searches, etc")
 
-(defvar smacs/query-most-recent-questions 
-  "http://api.stackexchange.com/2.1/questions?order=desc&sort=creation&site=stackoverflow&filter=withbody")
+(setq smacs/query-most-recent-questions 
+  "http://api.stackexchange.com/2.1/questions?order=desc&sort=creation&site=stackoverflow&filter=!)sX46RY9K1L2Vf.YNjW0")
+
+(defvar smacs/filter
+  "filter=!)sX46RY9K1L2Vf.YNjW0")
 
 (defun smacs/find-attr (test seq)
   "Grab the element with key that matches test. Useful for picking values out of a question."
   (find test seq :test (lambda (x y) (string= x (car y)))))
 
 (defun smacs/format-question (q)
-  (format "* %s" (cdr (smacs/find-attr "title" q))))
+  (format "* [%d votes / %d answers] %s\n** Question\n#+begin_src html html\n%s\n #+end_src\n" 
+          (cdr (smacs/find-attr "up_vote_count" q))
+          (cdr (smacs/find-attr "answer_count" q))
+          (cdr (smacs/find-attr "title" q))
+          (cdr (smacs/find-attr "body" q))))
+
+(defun smacs/buffer-reset ()
+  (switch-to-buffer (get-buffer-create smacs/buffer))
+  (stackmacs-mode)
+  (erase-buffer))
 
 (defun smacs/display-response (status)
   "Convert and display results from api call"
   (let* ((json-res (ckbk/url-retrieve-body-callback status))
          (json-structure (json-read-from-string json-res))
-         (questions (cdr (cadddr json-structure)))
-         (q1 (elt questions 1)))
-    (switch-to-buffer (get-buffer-create smacs/buffer))
-    (insert (smacs/format-question q1))))
+         (questions (cdr (cadddr json-structure))))
+    (smacs/buffer-reset)
+    (loop for q across questions do
+          (insert (smacs/format-question q)))
+    (org-overview)))
 
 (defun smacs/browse-questions ()
   (interactive)
@@ -59,8 +72,8 @@
 
 ;;; Major Mode stuff
 
-(define-derived-mode stackmacs-mode text-mode "stackmacs") 
+(define-derived-mode stackmacs-mode org-mode "stackmacs")
 
-(global-set-key (kbd "C-c C-s bq") 'smacs/browse-questions)
+(global-set-key (kbd "C-c s q") 'smacs/browse-questions)
 
 (provide 'stackmacs)
