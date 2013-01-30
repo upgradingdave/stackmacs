@@ -24,10 +24,11 @@
 
 ;;; Commentary:
 
-;; A client for browsing stackoverflow and answering questions. 
+;; A client for browsing stackoverflow questions. 
 
 ;;; Code:
 
+(require 'cl)
 (require 'cookbook)
 
 (defvar smacs/buffer "*stackmacs*" 
@@ -43,16 +44,33 @@
   "Grab the element with key that matches test. Useful for picking values out of a question."
   (find test seq :test (lambda (x y) (string= x (car y)))))
 
+(defun smacs/click ()
+  (interactive)
+  (let ((uri (get-text-property (point) 'uri)))
+    (if uri
+	(browse-url uri))))
+
+(defun smacs/fontify-url (text url)
+  "Note that I think `set-text-properties` get overridden by org magic,
+so just insert org link"
+  (concat "[[" url "][" text "]]"))
+
 (defun smacs/format-question (q)
-  (format "* [%d votes / %d answers] %s\n** Question\n#+begin_src html html\n%s\n #+end_src\n" 
+  (format (concat "* [%dv/%da]" 
+                  " %s\n\n"
+                  (smacs/fontify-url "Click to Answer" 
+                                     "http://stackoverflow.com/questions/%d#new-answer") 
+                  "\n\n#+begin_src html html\n%s#+end_src\n") 
           (cdr (smacs/find-attr "up_vote_count" q))
           (cdr (smacs/find-attr "answer_count" q))
           (cdr (smacs/find-attr "title" q))
+          (cdr (smacs/find-attr "question_id" q))
           (cdr (smacs/find-attr "body" q))))
 
 (defun smacs/buffer-reset ()
   (switch-to-buffer (get-buffer-create smacs/buffer))
   (stackmacs-mode)
+  (visual-line-mode 1)
   (erase-buffer))
 
 (defun smacs/display-response (status)
@@ -61,9 +79,12 @@
          (json-structure (json-read-from-string json-res))
          (questions (cdr (cadddr json-structure))))
     (smacs/buffer-reset)
-    (loop for q across questions do
-          (insert (smacs/format-question q)))
-    (org-overview)))
+    (save-excursion
+      (loop for q across questions do
+            (insert (smacs/format-question q)))
+      (org-overview))
+;;    (show-subtree)
+    ))
 
 (defun smacs/browse-questions ()
   (interactive)
@@ -71,8 +92,17 @@
     (url-retrieve url #'smacs/display-response)))
 
 ;;; Major Mode stuff
+(defun stackmacs ()
+  (interactive)
+  "Start stackmacs and load questions"
+  (smacs/browse-questions))
 
-(define-derived-mode stackmacs-mode org-mode "stackmacs")
+(define-derived-mode stackmacs-mode org-mode "stackmacs" 
+  "Major Mode for browsing StackOverflow Questions
+\\{stackmacs-mode-map}")
+
+(let ((sm stackmacs-mode-map))
+  (define-key sm (kbd "r") 'smacs/browse-questions))
 
 (global-set-key (kbd "C-c s q") 'smacs/browse-questions)
 

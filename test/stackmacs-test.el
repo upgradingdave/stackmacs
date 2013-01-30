@@ -22,11 +22,11 @@
          (questions (cdr (cadddr json-structure))))
     (should (vectorp questions))))
 
+(ert-deftest smacs/format-test ()
+  (let* ((json-res (with-current-buffer (find-file-noselect "test/questions.json")
+                     (buffer-string)))
+         (json-structure (json-read-from-string json-res))
+         (questions (cdr (cadddr json-structure))))
 
-;; (setq q1  (let* ((json-res (with-current-buffer (find-file-noselect "test/questions.json")
-;;                              (buffer-string)))
-;;                  (json-structure (json-read-from-string json-res))
-;;                  (questions (cdr (cadddr json-structure)))
-;;                  (q1 (elt questions 1)))
-;;             q1))
+    (should (string= "* [0v/0a] Dispatcher.Invoke does not catch exception\n\n[[http://stackoverflow.com/questions/14595969#new-answer][Click to Answer]]\n\n#+begin_src html html\n<p>I have a code below to get a response from HTTP GET:</p>\n\n<pre><code>private void ResponseReady(IAsyncResult aResult)\n        {\n            HttpWebRequest request = aResult.AsyncState as HttpWebRequest;\n\n            try\n            {\n                this.Dispatcher.BeginInvoke(delegate()\n                {\n                    HttpWebResponse response = (HttpWebResponse)request.EndGetResponse(aResult);\n</code></pre>\n\n<p>The problem when there is no connection, it will stop at the <code>response</code> row. It doesn't catch the exception. Is it because of the <code>Dispatcher.Invoke</code>?</p>\n\n<p>Thank you.</p>\n#+end_src\n" (smacs/format-question (elt questions 1))))))
 

@@ -1,19 +1,80 @@
 * stackmacs
 
-  A emacs major mode for stack overflow
+  A emacs major mode for searching and browsing questions from stack
+  overflow. 
 
+  Currently, functionality is very limited. I wrote this just for fun
+  to learn more elisp. I'm not sure I'll have time to continue adding
+  features, but please let me know if you think it'd be worth
+  continuing development and/or if you want to help build this into
+  something.  
+
+* Install
+
+  Get a copy of my elisp cookbook project:
+#+begin_src sh
+cd ~/elisp
+git clone https://github.com/upgradingdave/cookbook
+#+end_src
+  
+  Get a copy of stackmacs: 
+#+begin_src sh
+cd ~/elisp
+git clone https://github.com/upgradingdave/stackmacs
+#+end_src
+  
+  Load the libraries into emacs: 
+#+begin_src elisp
+(load "~/elisp/cookbook/cookbook.el")
+(load "~/elisp/stackmacs/stackmacs.el")
+#+end_src
+
+* Usage
+
+  `M-x stackmacs` to view most recent 30 questions asked on
+  stackoverflow. That's really all there is right now!
+
+  `[0v/0a]` means the question has 0 votes and 0 answers. 
+  
+  Press `r` to refresh the questions. Press TAB to read each question.
+  Mouse click on "Click to Answer" will open browser directly to the
+  question.
+  
 * Keybindings
 
-  All keybindings in stackmacs start with `C-c C-s` and then a two
-  letter mnemonic shortcut
+** Global keybindings
 
-  - browse questions (`bq`) :: Browse thru list of most recent stack
-       overflow questions
+    - `C-c s q` :: start stackmacks
 
+** Inside stacksmacs-mode
+
+  - most recent questions (`r`) :: Refreshes the buffer with most
+       recent stackoverflow questions
        
-* Development Environment Setup
+* Development Environment
 
-  Use carton to download dependencies. 
-  Run tests using ecukes. 
+** Unit Tests
 
+   To run the `ert` test suite, first make sure you are in the
+   project's root directory. In other words, `test` should be a
+   subdirectory of cwd. 
+  
+   To run the tests interactively (from within emacs), use: 
+
+#+begin_src elisp
+(ert "ckbk*")
+#+end_src
+  
+   To run them from commandline, download and install [[https://github.com/rejeep/carton][carton]]. Then,
+   install dependencies and use carton to run the tests. 
+
+   Note that my elisp cookbook library is not available in available in
+   elpa yet, so you'll need to manually download it and include it on
+   the load path. 
+
+#+begin_src sh
+cd ~/elisp/stackmacs
+carton install
+carton exec ./test/run-tests.sh
+#+end_src
 
