@@ -55,15 +55,21 @@
 so just insert org link"
   (concat "[[" url "][" text "]]"))
 
+(defun smacs/format-tags (tagv)
+  "Format TAGV vector into string that can be inserted into buffer"
+  (concat ":" (mapconcat 'identity (append tagv nil) ":") ":"))
+
 (defun smacs/format-question (q)
   (format (concat "* [%dv/%da]" 
-                  " %s\n\n"
+                  " %s %s\n\n"
                   (smacs/fontify-url "Click to Answer" 
                                      "http://stackoverflow.com/questions/%d#new-answer") 
-                  "\n\n#+begin_src html html\n%s#+end_src\n") 
+                  "\n\n" 
+                  "#+begin_src html html\n%s#+end_src\n") 
           (cdr (smacs/find-attr "up_vote_count" q))
           (cdr (smacs/find-attr "answer_count" q))
           (cdr (smacs/find-attr "title" q))
+          (smacs/format-tags (cdr (smacs/find-attr "tags" q)))
           (cdr (smacs/find-attr "question_id" q))
           (cdr (smacs/find-attr "body" q))))
 
